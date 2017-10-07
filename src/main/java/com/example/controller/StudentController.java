@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.dao.StudentMapper;
+import com.example.model.CourseModel;
 import com.example.model.StudentModel;
 import com.example.service.StudentService;
 
@@ -47,7 +48,7 @@ public class StudentController
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "gpa", required = false) double gpa)
     {
-        StudentModel student = new StudentModel (npm, name, gpa);
+        StudentModel student = new StudentModel (npm, name, gpa, null);
         studentDAO.addStudent (student);
 
         return "success-add";
@@ -181,6 +182,15 @@ public class StudentController
     	
     	model.addAttribute("npm", npm.get());
     	return "not-found";
+    }
+    
+    @RequestMapping("/course/view/{id}")
+    public String course(@PathVariable(value="id") String id, Model model){
+    	
+    	CourseModel course = studentDAO.selectCourse(id);
+    	model.addAttribute("course", course);
+    	
+    	return "course";
     }
 
 }
