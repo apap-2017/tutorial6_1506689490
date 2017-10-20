@@ -27,15 +27,17 @@ public class StudentController
 
 
     @RequestMapping("/")
-    public String index ()
-    {
+    public String index (Model model)
+    {	
+    	model.addAttribute("title", "Index");
         return "index";
     }
 
 
     @RequestMapping("/student/add")
-    public String add ()
+    public String add (Model model)
     {
+    	model.addAttribute("title", "Add Student");
         return "form-add";
     }
     
@@ -46,11 +48,12 @@ public class StudentController
     public String addSubmit (
             @RequestParam(value = "npm", required = false) String npm,
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "gpa", required = false) double gpa)
+            @RequestParam(value = "gpa", required = false) double gpa,
+            Model model)
     {
         StudentModel student = new StudentModel (npm, name, gpa, null);
         studentDAO.addStudent (student);
-
+        model.addAttribute("title", "Sukses Add Student");
         return "success-add";
     }
     
@@ -59,15 +62,18 @@ public class StudentController
     {
     	if(!npm.isPresent()){
     		model.addAttribute("npm", null);
+    		model.addAttribute("title", "Not found");
     		return "not-found";
     	}
     	
     	StudentModel student = studentDAO.selectStudent(npm.get());
     	if(student != null){
     		model.addAttribute("student", student);
+    		model.addAttribute("title", "Update Student");
     		return "form-update";
     	}
     	model.addAttribute("npm", npm.get());
+    	model.addAttribute("title", "Not found");
     	return "not-found";
   
     }
@@ -106,16 +112,19 @@ public class StudentController
     {
     	
     	if(bindingResult.hasErrors()){
+    		model.addAttribute("title", "Not found");
     		return "not-found";
     	}
     	
     	StudentModel studentTemp = studentDAO.selectStudent(student.getNpm());
     	if(studentTemp == null){
     		model.addAttribute("npm", student.getNpm());
+    		model.addAttribute("title", "Not found");
     		return "not-found";
     	}
     		
     	studentDAO.updateStudent(student);
+    	model.addAttribute("title", "Sukses Update Student");
         return "success-update";
     	
     	
@@ -132,8 +141,10 @@ public class StudentController
 
         if (student != null) {
             model.addAttribute ("student", student);
+            model.addAttribute("title", "Detail Student");
             return "view";
         } else {
+        	model.addAttribute("title", "Not found");
             model.addAttribute ("npm", npm);
             return "not-found";
         }
@@ -148,9 +159,11 @@ public class StudentController
 
         if (student != null) {
             model.addAttribute ("student", student);
+            model.addAttribute("title", "Detail Student");
             return "view";
         } else {
             model.addAttribute ("npm", npm);
+            model.addAttribute("title", "Not found");
             return "not-found";
         }
     }
@@ -161,7 +174,7 @@ public class StudentController
     {
         List<StudentModel> students = studentDAO.selectAllStudents ();
         model.addAttribute ("students", students);
-
+        model.addAttribute("title", "All Students");
         return "viewall";
     }
 
@@ -171,16 +184,19 @@ public class StudentController
     {
     	if(!npm.isPresent()){
     		model.addAttribute("npm", null);
+    		model.addAttribute("title", "Not found");
     		return "not-found";
     	}
     	StudentModel student = studentDAO.selectStudent(npm.get());
     	
     	if(student != null){
     		 studentDAO.deleteStudent (npm.get());
+    		 model.addAttribute("title", "Delete Student");
     		 return "delete";
     	}
     	
     	model.addAttribute("npm", npm.get());
+    	model.addAttribute("title", "Not found");
     	return "not-found";
     }
     
@@ -189,7 +205,7 @@ public class StudentController
     	
     	CourseModel course = studentDAO.selectCourse(id);
     	model.addAttribute("course", course);
-    	
+    	model.addAttribute("title", "Detail Course");
     	return "course";
     }
 
